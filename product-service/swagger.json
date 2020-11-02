@@ -1,0 +1,108 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "RS School API",
+    "description": "API for AWS Node [task 3](https://github.com/rolling-scopes-school/nodejs-aws-tasks/blob/main/task3-product-api/task.md).",
+    "version": "0.0.1"
+  },
+  "servers": [
+    {
+      "url": "https://ox1m9ngpvi.execute-api.eu-west-1.amazonaws.com/dev/",
+      "description": "Base path"
+    }
+  ],
+  "paths": {
+    "/get-products-list": {
+      "get": {
+        "summary": "Returns a list of products.",
+        "description": "Mock list of products.",
+        "responses": {
+          "200": {
+            "description": "A JSON array of Products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Product"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get-product-id/{productId}": {
+      "get": {
+        "summary": "Returns a Product by ID.",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "description": "Product Id.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "product": {
+                      "$ref": "#/definitions/Product"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Product": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "count": {
+          "type": "number"
+        },
+        "price": {
+          "type": "number"
+        },
+        "image": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "count",
+        "price",
+        "image"
+      ]
+    }
+  }
+}
