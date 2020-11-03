@@ -7,29 +7,38 @@ const headers = {
 }
 
 export const getProductById: APIGatewayProxyHandler = async (event, _context) => {
-    const {productId} = event.pathParameters;
+    try {
+        const productId = event.pathParameters?.productId;
 
-    const productIndex = products.findIndex(product => product.id === productId);
+        const productIndex = products.findIndex(product => product.id === productId);
 
-    if (productIndex > -1) {
-        const placeholderLink = `https://jsonplaceholder.typicode.com/posts/${productIndex + 1}`;
-        const resp = await fetch(placeholderLink);
-        const data = await resp.json();
+        if (productIndex > -1) {
+            const placeholderLink = `https://jsonplaceholder.typicode.com/posts/${productIndex + 1}`;
+            const resp = await fetch(placeholderLink);
+            const data = await resp.json();
+
+            return {
+                statusCode: 200,
+                headers,
+                body: JSON.stringify({
+                    message: 'getProductById',
+                    product: products[productIndex],
+                    jsonplaceholderData: data
+                }, null, 2),
+            };
+        }
 
         return {
-            statusCode: 200,
+            statusCode: 404,
             headers,
-            body: JSON.stringify({
-                message: 'getProductById',
-                product: products[productIndex],
-                jsonplaceholderData: data
-            }, null, 2),
-        };
+            body: 'Not found'
+        }
+    } catch (e) {
+        return {
+            statusCode: 500,
+            headers,
+            body: 'Internal Server Error'
+        }
     }
 
-    return {
-        statusCode: 404,
-        headers,
-        body: 'Not found'
-    }
 }
