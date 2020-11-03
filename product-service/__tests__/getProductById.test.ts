@@ -1,5 +1,6 @@
 import {getProductById} from "../handlers/getProductById";
 import products from "../products";
+import headers from "../handlers/headers";
 
 describe("getProductById", () => {
     it("should return not found code if product does not exist", async () => {
@@ -14,9 +15,7 @@ describe("getProductById", () => {
         expect(res).toEqual({
             statusCode: 404,
             body: 'Not found',
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-            },
+            headers,
         })
     })
 
@@ -31,9 +30,7 @@ describe("getProductById", () => {
         const res = await getProductById(mockEvent)
         expect(res).toEqual({
             statusCode: 200,
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-            },
+            headers,
             body: JSON.stringify({
                 message: 'getProductById',
                 product: products[0],

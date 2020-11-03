@@ -1,5 +1,6 @@
 import {getProductsList} from "../handlers/getProductsList";
 import products from "../products";
+import headers from "../handlers/headers";
 
 describe("getProductsList", () => {
     it("return correct list", async () => {
@@ -11,9 +12,7 @@ describe("getProductsList", () => {
         const res = await getProductsList()
         expect(res).toEqual({
             statusCode: 200,
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-            },
+            headers,
             body: JSON.stringify(
                 products.map((item) => ({
                     ...item,

@@ -1,12 +1,9 @@
 import fetch from "node-fetch";
 import {APIGatewayProxyHandler} from "aws-lambda";
 import products from "../products";
+import headers from "./headers";
 
-const headers = {
-    'Access-Control-Allow-Origin': '*',
-}
-
-export const getProductById: APIGatewayProxyHandler = async (event, _context) => {
+export const getProductById: APIGatewayProxyHandler = async (event) => {
     try {
         const productId = event.pathParameters?.productId;
 

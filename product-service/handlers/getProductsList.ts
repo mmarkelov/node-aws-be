@@ -1,12 +1,11 @@
 import {APIGatewayProxyHandler} from "aws-lambda";
 import products from "../products";
+import headers from "./headers";
 
 export const getProductsList: APIGatewayProxyHandler = async () => {
     return {
         statusCode: 200,
-        headers: {
-            "Access-Control-Allow-Origin": "*",
-        },
+        headers,
         body: JSON.stringify(
             products.map((item) => ({
                 ...item,
