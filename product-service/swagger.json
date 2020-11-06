@@ -12,7 +12,7 @@
     }
   ],
   "paths": {
-    "/get-products-list": {
+    "/products": {
       "get": {
         "summary": "Returns a list of products.",
         "description": "Mock list of products.",
@@ -33,7 +33,7 @@
         }
       }
     },
-    "/get-product-id/{productId}": {
+    "/products/{productId}": {
       "get": {
         "summary": "Returns a Product by ID.",
         "parameters": [
