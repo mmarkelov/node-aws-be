@@ -56,7 +56,7 @@ describe("getProductById", () => {
         }
 
         pool.connect.mockResolvedValueOnce({
-            query: jest.fn().mockResolvedValueOnce({ rows: products, rowCount: 1 }),
+            query: jest.fn().mockResolvedValue({ rows: products, rowCount: 1 }),
             release: jest.fn(),
         });
 

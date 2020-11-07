@@ -13,7 +13,7 @@ let pool
 export const createProduct: APIGatewayProxyHandler = async(event) => {
     console.log(event.body);
 
-    const body = JSON.parse(event.body)
+    const body = JSON.parse(event.body);
 
     if (!isValid(body)) {
         return {
@@ -33,28 +33,36 @@ export const createProduct: APIGatewayProxyHandler = async(event) => {
 
     try {
         const {title, description = '', price, count = Math.floor(Math.random() * 10) + 1} = body;
-        const {rows: products} = await client.query(
-            `insert into products (title, description, price) values ('${title}', '${description}', ${price}) returning *`
-        );
+        try {
+            await client.query('BEGIN')
+            const {rows: products} = await client.query(
+                `insert into products (title, description, price) values ('${title}', '${description}', ${price}) returning *`
+            );
 
-        const product = {...products[0], count}
+            const product = {...products[0], count}
+            await client.query(
+                `insert into stocks (product_id, count) values ('${product.id}', ${count}) returning count`
+            );
 
-        await client.query(
-            `insert into stocks (product_id, count) values ('${product.id}', ${count}) returning count`
-        );
+            await client.query('COMMIT')
 
-        return {
-            statusCode: 200,
-            headers,
-            body: JSON.stringify({
-                message: 'getProductById',
-                product,
-            }, null, 2),
+            return {
+                statusCode: 200,
+                headers,
+                body: JSON.stringify({
+                    message: 'createProduct',
+                    product,
+                }, null, 2),
+            }
+        } catch (e) {
+            console.log(e)
+            await client.query('ROLLBACK')
+            return internalError;
+        } finally {
+            client.release()
         }
     } catch (err) {
         console.error('Error during database request executing:', err);
         return internalError;
-    } finally {
-        client.release();
     }
 }
