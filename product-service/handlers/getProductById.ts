@@ -20,7 +20,8 @@ export const getProductById: APIGatewayProxyHandler = async (event) => {
         const productId = event.pathParameters?.productId;
 
         const {rows: products} = await client.query(
-            `select * from products p inner join stocks s on s.product_id = p.id where p.id= '${productId}'`
+            `select * from products p inner join stocks s on s.product_id = p.id where p.id = $1`,
+            [productId]
         );
 
         if (products.length) {

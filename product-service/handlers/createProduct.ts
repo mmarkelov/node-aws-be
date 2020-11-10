@@ -36,12 +36,14 @@ export const createProduct: APIGatewayProxyHandler = async(event) => {
         try {
             await client.query('BEGIN')
             const {rows: products} = await client.query(
-                `insert into products (title, description, price) values ('${title}', '${description}', ${price}) returning *`
+                `insert into products (title, description, price) values ($1, $2, $3) returning *`,
+                [title, description, price]
             );
 
             const product = {...products[0], count}
             await client.query(
-                `insert into stocks (product_id, count) values ('${product.id}', ${count}) returning count`
+                `insert into stocks (product_id, count) values ($1, $2) returning count`,
+                [product.id, count]
             );
 
             await client.query('COMMIT')
