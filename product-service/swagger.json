@@ -3,7 +3,7 @@
   "info": {
     "title": "RS School API",
     "description": "API for AWS Node [task 3](https://github.com/rolling-scopes-school/nodejs-aws-tasks/blob/main/task3-product-api/task.md).",
-    "version": "0.0.1"
+    "version": "0.0.2"
   },
   "servers": [
     {
@@ -12,7 +12,7 @@
     }
   ],
   "paths": {
-    "/get-products-list": {
+    "/products": {
       "get": {
         "summary": "Returns a list of products.",
         "description": "Mock list of products.",
@@ -29,11 +29,74 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create new product.",
+        "description": "Create new product with passed body.",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "product",
+            "description": "The user to create.",
+            "schema": {
+              "type": "object",
+              "required": [
+                "title"
+              ],
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "price": {
+                  "type": "number"
+                },
+                "count": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Created Product",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "product": {
+                      "$ref": "#/definitions/Product"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
     },
-    "/get-product-id/{productId}": {
+    "/products/{productId}": {
       "get": {
         "summary": "Returns a Product by ID.",
         "parameters": [
@@ -68,6 +131,9 @@
           },
           "404": {
             "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }

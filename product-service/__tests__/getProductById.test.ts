@@ -1,14 +1,43 @@
 import {getProductById} from "../handlers/getProductById";
-import products from "../products";
-import headers from "../handlers/headers";
+import {headers} from "../handlers/helpers";
+import {Pool} from "pg";
+
+jest.mock('pg', () => {
+    const mPool = {
+        connect: jest.fn(),
+    };
+    return { Pool: jest.fn(() => mPool) };
+});
+
+const products = [{
+    id: "bc24cfa9-ae49-4803-a397-e347a9edcf52",
+    title: "ProductOne",
+    description: "Short Product Description1",
+    price: "10",
+    product_id: "bc24cfa9-ae49-4803-a397-e347a9edcf52",
+    count: "5",
+}];
 
 describe("getProductById", () => {
+    let pool;
+    beforeEach(() => {
+        pool = new Pool();
+    });
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
     it("should return not found code if product does not exist", async () => {
         const mockEvent = {
             pathParameters: {
                 productId: "not-exist"
             }
         }
+
+        pool.connect.mockResolvedValueOnce({
+            query: jest.fn().mockResolvedValueOnce({ rows: [], rowCount: 0 }),
+            release: jest.fn(),
+        });
 
         // @ts-ignore
         const res = await getProductById(mockEvent)
@@ -26,6 +55,11 @@ describe("getProductById", () => {
             }
         }
 
+        pool.connect.mockResolvedValueOnce({
+            query: jest.fn().mockResolvedValue({ rows: products, rowCount: 1 }),
+            release: jest.fn(),
+        });
+
         // @ts-ignore
         const res = await getProductById(mockEvent)
         expect(res).toEqual({
@@ -34,12 +68,6 @@ describe("getProductById", () => {
             body: JSON.stringify({
                 message: 'getProductById',
                 product: products[0],
-                jsonplaceholderData: {
-                    "userId": 1,
-                    "id": 1,
-                    "title": "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
-                    "body": "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto"
-                }
             }, null, 2),
         })
     })
