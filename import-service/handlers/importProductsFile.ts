@@ -1,11 +1,21 @@
 import {APIGatewayProxyHandler} from "aws-lambda";
 import {S3} from "aws-sdk";
+import {headers, internalError} from "./helpers";
 
 const BUCKET = process.env.BUCKET;
 
 export const importProductsFile: APIGatewayProxyHandler = async (event) => {
-    const catalogName = event.queryStringParameters?.name;
-    const catalogPath = `uploaded/${catalogName}`;
+    const fileName = event.queryStringParameters?.name;
+
+    if (!fileName) {
+        return {
+            statusCode: 400,
+            headers,
+            body: 'Missing name query parameter'
+        }
+    }
+
+    const catalogPath = `uploaded/${fileName}`;
 
     const s3 = new S3({region: 'eu-west-1'});
 
@@ -16,20 +26,15 @@ export const importProductsFile: APIGatewayProxyHandler = async (event) => {
         ContentType: 'text/csv'
     }
 
-    return new Promise((res, rej) => {
-        s3.getSignedUrl('putObject', params, (err, url) => {
-            if (err) {
-                console.log(err)
-                return rej(err);
-            }
-
-            res({
-                headers: {
-                    'Access-Control-Allow-Origin': '*'
-                },
-                statusCode: 200,
-                body: url
-            })
-        })
-    })
+    try {
+        const signedUrl = await s3.getSignedUrlPromise('putObject', params)
+        return {
+            statusCode: 200,
+            headers,
+            body: signedUrl
+        }
+    } catch (e) {
+        console.log(e)
+        return internalError
+    }
 }
