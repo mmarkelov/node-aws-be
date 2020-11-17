@@ -6,9 +6,7 @@ const serverlessConfiguration: Serverless = {
   custom: {
     webpack: {
       webpackConfig: './webpack.config.js',
-      includeModules: {
-        forceExclude: ['aws-sdk']
-      }
+      includeModules: true
     }
   },
   // Add the serverless-webpack plugin
