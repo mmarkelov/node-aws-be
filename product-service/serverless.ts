@@ -24,12 +24,46 @@ const serverlessConfiguration: Serverless = {
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+      AWS_SQS_NAME: 'node-aws-sqs-queue',
       PG_HOST: '${env:PG_HOST}',
       PG_PORT: '${env:PG_PORT}',
       PG_DATABASE: '${env:PG_DATABASE}',
       PG_USERNAME: '${env:PG_USERNAME}',
       PG_PASSWORD: '${env:PG_PASSWORD}',
     },
+    iamRoleStatements: [
+      {
+        Effect: 'Allow',
+        Action: 'sqs:*',
+        Resource: [
+          {
+            'Fn::GetAtt': ['SQSQueue', 'Arn']
+          }
+        ]
+      }
+    ],
+  },
+  resources: {
+    Outputs: {
+      SQSQueueUrl: {
+        Value: {
+          Ref: 'SQSQueue'
+        }
+      },
+      SQSQueueArn: {
+        Value: {
+          'Fn::GetAtt': ['SQSQueue', 'Arn']
+        }
+      }
+    },
+    Resources: {
+      SQSQueue: {
+        Type: 'AWS::SQS::Queue',
+        Properties: {
+          QueueName: '${self:provider.environment.AWS_SQS_NAME}'
+        }
+      }
+    }
   },
   functions: {
     getProductsList: {
@@ -64,6 +98,19 @@ const serverlessConfiguration: Serverless = {
             method: 'post',
             path: 'products',
             cors: true
+          }
+        }
+      ]
+    },
+    catalogBatchProcess: {
+      handler: 'handler.catalogBatchProcess',
+      events: [
+        {
+          sqs: {
+            batchSize: 5,
+            arn: {
+              'Fn::GetAtt': ['SQSQueue', 'Arn']
+            }
           }
         }
       ]
