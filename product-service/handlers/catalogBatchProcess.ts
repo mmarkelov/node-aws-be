@@ -1,6 +1,6 @@
 import {Pool} from "pg";
 import {DB_OPTIONS} from "./db";
-import {internalError} from "./helpers";
+import {isValid} from "./helpers";
 
 let pool
 
@@ -16,21 +16,24 @@ export const catalogBatchProcess = async(event) => {
     event.Records.map(async ({ body }) => {
         try {
             const {title, description, price, count} = JSON.parse(body);
+
+            if (!isValid({title, price, count})) {
+                throw new Error('Wrong params')
+            }
             const {rows: products} = await client.query(
                 `insert into products (title, description, price) values ($1, $2, $3) returning *`,
                 [title, description, price]
             );
 
-            const product = {...products[0], count}
+            const product = {...products[0], count};
+            // console.log('Product created');
             await client.query(
-                `insert into stocks (product_id, count) values ($1, $2) returning count`,
+                `insert into stocks (product_id, count) values ($1, $2)`,
                 [product.id, count]
             );
             console.log('Product created');
-            return { product };
         } catch (err) {
             console.log(`Fail creating a product ${body}`);
-            return internalError;
         } finally {
             client.release();
         }
