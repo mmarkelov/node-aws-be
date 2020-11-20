@@ -25,6 +25,10 @@ const serverlessConfiguration: Serverless = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       AWS_SQS_NAME: 'node-aws-sqs-queue',
+      AWS_SNS_TOPIC: 'node-aws-product-topic',
+      AWS_SNS_ARN: {
+        Ref: 'SNSTopic'
+      },
       PG_HOST: '${env:PG_HOST}',
       PG_PORT: '${env:PG_PORT}',
       PG_DATABASE: '${env:PG_DATABASE}',
@@ -38,6 +42,15 @@ const serverlessConfiguration: Serverless = {
         Resource: [
           {
             'Fn::GetAtt': ['SQSQueue', 'Arn']
+          }
+        ]
+      },
+      {
+        Effect: 'Allow',
+        Action: 'sns:*',
+        Resource: [
+          {
+            Ref: 'SNSTopic'
           }
         ]
       }
@@ -61,6 +74,22 @@ const serverlessConfiguration: Serverless = {
         Type: 'AWS::SQS::Queue',
         Properties: {
           QueueName: '${self:provider.environment.AWS_SQS_NAME}'
+        }
+      },
+      SNSTopic: {
+        Type: 'AWS::SNS::Topic',
+        Properties: {
+          TopicName: '${self:provider.environment.AWS_SNS_TOPIC}'
+        }
+      },
+      SNSSubscription: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: '${env:SNS_EMAIL}',
+          Protocol: 'email',
+          TopicArn: {
+            Ref: 'SNSTopic'
+          }
         }
       }
     }

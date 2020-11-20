@@ -8,6 +8,15 @@ jest.mock('pg', () => {
     return { Pool: jest.fn(() => mPool) };
 });
 
+jest.mock('aws-sdk', () => {
+    const mSNS = {
+        publish: () => ({
+            promise: jest.fn()
+        })
+    };
+    return { SNS: jest.fn(() => mSNS) };
+});
+
 const products = [{
     id: "bc24cfa9-ae49-4803-a397-e347a9edcf52",
     title: "ProductOne",
