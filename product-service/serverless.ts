@@ -91,6 +91,17 @@ const serverlessConfiguration: Serverless = {
             Ref: 'SNSTopic'
           }
         }
+      },
+      SNSSubscriptionError: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: '${env:SNS_ERROR_EMAIL}',
+          Protocol: 'email',
+          TopicArn: {
+            Ref: 'SNSTopic'
+          },
+          FilterPolicy: { "status": ["Error"] }
+        }
       }
     }
   },

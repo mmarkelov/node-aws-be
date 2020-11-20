@@ -61,7 +61,7 @@ describe("catalogBatchProcess", () => {
 
         // @ts-ignore
         await catalogBatchProcess(mockEvent)
-        expect(consoleSpy).toHaveBeenCalledWith(`Fail creating a product ${JSON.stringify(body)}`);
+        expect(consoleSpy).toHaveBeenCalledWith(`Invalid data for product ${JSON.stringify(body)}`);
     })
 
     it("should create product for valid body", async () => {
