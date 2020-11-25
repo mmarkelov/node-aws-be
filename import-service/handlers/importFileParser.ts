@@ -23,8 +23,9 @@ export const importFileParser = (event) => {
                 }, (err, messageResult) => {
                     if (err) {
                         console.log(err)
+                    } else {
+                        console.log('Send message for', data, messageResult)
                     }
-                    console.log('Send message for', data, messageResult)
                 })
             })
             .on('end', async () => {
