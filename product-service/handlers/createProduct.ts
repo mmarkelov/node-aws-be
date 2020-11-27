@@ -1,11 +1,7 @@
 import {APIGatewayProxyHandler} from "aws-lambda";
 import {Pool} from "pg";
 import {DB_OPTIONS} from "./db";
-import {headers, internalError} from "./helpers";
-
-const isValid = ({title, price, count}) => {
-    return !(!title || !price || price < 0 || count < 0);
-}
+import {headers, internalError, isValid} from "./helpers";
 
 // cached variable
 let pool

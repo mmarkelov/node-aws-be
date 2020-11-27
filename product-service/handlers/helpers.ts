@@ -7,3 +7,7 @@ export const internalError = {
     headers,
     body: 'Internal Server Error'
 }
+
+export const isValid = ({title, price, count}) => {
+    return !(!title || !price || price < 0 || count < 0);
+}
