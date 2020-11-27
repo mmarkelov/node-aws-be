@@ -21,7 +21,8 @@ const serverlessConfiguration: Serverless = {
         environment: {
             BUCKET: 'node-aws-files',
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
-        CATALOG_SQS_QUEUE_URL: '${cf:product-service-${self:provider.stage}.SQSQueueUrl}'},
+            CATALOG_SQS_QUEUE_URL: '${cf:product-service-${self:provider.stage}.SQSQueueUrl}'
+        },
         iamRoleStatements: [
             {
                 Effect: 'Allow',
@@ -31,13 +32,14 @@ const serverlessConfiguration: Serverless = {
             {
                 Effect: 'Allow',
                 Action: 's3:*',
-                Resource: 'arn:aws:s3:::${self:provider.environment.BUCKET}/*'},
-      {
-        Effect: 'Allow',
-        Action: 'sqs:*',
-        Resource: [
-          '${cf:product-service-${self:provider.stage}.SQSQueueArn}'
-        ]
+                Resource: 'arn:aws:s3:::${self:provider.environment.BUCKET}/*'
+            },
+            {
+                Effect: 'Allow',
+                Action: 'sqs:*',
+                Resource: [
+                    '${cf:product-service-${self:provider.stage}.SQSQueueArn}'
+                ]
             }
         ],
     },
