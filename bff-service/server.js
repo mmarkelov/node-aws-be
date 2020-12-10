@@ -16,11 +16,12 @@ app.all('/*', (req, res) => {
 
 	const recipientURL = process.env[recipient];
 	console.log('recipientURL', recipientURL);
+	const filteredParams = req.originalUrl.split('/').filter(item => item !== recipient).join('/');
 
 	if (recipientURL) {
 		const axiosConfig = {
 			method: req.method,
-			url: `${recipientURL}${req.originalUrl}`,
+			url: `${recipientURL}${filteredParams}`,
 			...(Object.keys(req.body || {}).length > 0 && {data: req.body})
 		};
 
@@ -30,7 +31,7 @@ app.all('/*', (req, res) => {
 				res.json(response.data);
 			})
 			.catch(error => {
-				console.log('error', error)
+				// console.log('error', error)
 				if (error.response) {
 					const {
 						status,
